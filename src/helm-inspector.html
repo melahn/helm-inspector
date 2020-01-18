@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<!--
+
+This page provides an interactive tree view of a Kubernetes Helm chart and its dependencies.
+
+The tree view is loaded from a JSON representation of the Helm chart such as can be generated from
+https://github.com/Alfresco/alfresco-anaxes-chartmap.  The tree is created using D3.
+
+The user starts out in 'navigation' mode in which the user
+can click through the nodes of the tree to see the relationships between a Helm chart and its dependencies
+as well as the Docker Images on which a Helm chart depends.  The user can then elect to go into an
+'inspection' mode in which the details of a Helm Chart or Docker image can be viewed by hovering the
+mouse pointer over a node in the tree.
+
+This was inspired by https://bl.ocks.org/d3noob/1a96af738c89b88723eb63456beb6510
+which was in turn inspired by https://observablehq.com/@d3/collapsible-tree.
+
+-->
+<meta charset="UTF-8">
+<style>
+
+    /* Style for the gadget to select the mode */
+    .selector {
+        fill: lightgreen;
+        stroke: steelblue;
+        stroke-width: 3px;
+        height: 20px;
+        width: 80px;
+        x: 30;
+        y: 40;
+        rx: 8;
+        ry: 8;
+    }
+
+    /* Style for the inspector view */
+    .inspector {
+        fill: lightgoldenrodyellow;
+        stroke: steelblue;
+        stroke-width: 3px;
+        height: 250px;
+        width: 400px;
+        rx: 8;
+        ry: 8;
+    }
+
+    /* Style for the rectangles */
+    .node rect {
+        fill: #fff;
+        stroke: black;
+        stroke-width: 3px;
+        height: 80px;
+        width: 130px;
+        x: -60;
+        y: -40;
+        rx: 8; /* I like rounded corners */
+        ry: 8; /* I like rounded corners */
+    }
+
+    /* Style for default text */
+    .node text {
+        font: 12px sans-serif;
+    }
+
+    /* Style for the text used in the node details */
+    .detailstext {
+        font: 12px sans-serif;
+    }
+
+    /* Style for the links between nodes */
+    .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 2px;
+    }
+
+</style>
+
+<body>
+
+<!-- load the d3.js V5 library -->
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script>
+
+    // setup the parameters of the tree
+    var margin = {top: 20, right: 90, bottom: 30, left: 120},
+        width = 1200 - margin.left - margin.right,
+        height = 900 - margin.top - margin.bottom;
+
+    // create a place holder to show errors
+    var svg = d3.select("body").append("div").append("p").attr("id", "errorMsg")
+
+    // create a place holder for the mode selector
+    var svg = d3.select("body").append("div").append("p").attr("id", "selector")
+
+    // create an svg for the tree to live in
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.right + margin.left)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate("
+            + margin.left + "," + margin.top + ")");
+
+    var i = 0, // used for node id's
+        fileName = "helm-data.json", // the name of the file containing the helm data
+        duration = 750,  // controls the speed at which a tree node opens
+        detailsHeight = 290,  // controls the height of the details shown in 'inspection node'
+        detailsWidth = 400,   // controls the width of the details shown in 'inspection node'
+        root, // the root of the tree
+        treeData // where the data is loaded
+
+    // declares a tree layout and assigns the size
+    var treemap = d3.tree().size([height, width]);
+    d3.json(fileName, function (error, treeData) {
+        if (error) {
+            d3.select("#errorMsg").text(error + "Error loading file \"" + fileName + "\"")
+            throw error
+        }
+
+        // Assign the tree root and position it in the middle of
+        // svg
+        root = d3.hierarchy(treeData, function (d) {
+            return d.children;
+        });
+        root.x0 = height / 2;
+        root.y0 = 0;
+
+        // The tree starts up with the first two levels shown
+        // TODO Think whether users want to see the whole tree first since most are pretty shallow
+        root.children.forEach(collapse);
+
+        // The inspector node is what surfaces when hovering over a node
+        // when in inspect mode
+        var inspectorNode = d3.select('svg')
+            .append('g')
+            .attr("id", "g2")
+            .append('rect')
+            .attr('id', 'i1')
+            .attr('x', -800)
+            .attr('y', -800)
+            .attr('class', 'inspector')
+            .style('opacity', '0')
+
+        // When the user hovers over the inspector set the opacity so it pops
+        d3.select("#i1")
+            .on('mouseover', function (d) {
+                if (currentMode === mode.INSPECT) {
+                    d3.select("#i1").style('opacity', 1.0)
+                    d3.select(this).style("cursor", "pointer");
+                }
+            })
+
+        // 'Navigate' mode is when the user can expand the tree elements by clicking on them
+        // 'Inspect' mode is when the user can hover over a node to see the details
+        const mode = {
+            NAVIGATE: 'Navigate',
+            INSPECT: 'Inspect',
+        }
+        // Start out in 'Navigate' mode
+        var currentMode = mode.NAVIGATE;
+
+        // The selector is a means of switching the mode
+        // Maybe I want to do this via a a keyboard shortcut
+        // instead, or at least put the selector at the bottom
+        var selector = d3.select('#selector')
+            //  .append('div')
+            .append('svg')
+            .append('g')
+            .attr('id', 'g1')
+            .append('rect')
+            .attr('class', 'selector')
+            .attr('id', 'selectorMode')
+        d3.select('#g1')
+            .on('click', selectMode)
+            .append('text')
+            .attr('id', 'selectorText')
+            .text(currentMode)
+            .attr('x', 40)
+            .attr('y', 55)
+
+        /**
+         * Set the current mode (inspect or navigate)
+         * and update the selector
+         *
+         * @returns null
+         */
+        function selectMode() {
+            if (currentMode == mode.NAVIGATE) {
+                currentMode = mode.INSPECT
+                d3.select('#selectorMode').style('fill', 'yellow')
+            } else {
+                currentMode = mode.NAVIGATE
+                d3.select('#selectorMode').style('fill', 'lightgreen')
+            }
+            d3.select('#selectorText').text(currentMode)
+        }
+
+        /**
+         * Collapse a node and all its children
+         *
+         * @param {object} d the node data
+         * @returns null
+         */
+        function collapse(d) {
+            if (d.children) {
+                d._children = d.children
+                d._children.forEach(collapse)
+                d.children = null
+            }
+        }
+
+        // update the tree starting with the root node
+        update(root);
+
+        /**
+         * Update the tree starting at some point in the tree
+         *
+         * @param {object} source the node at which point update is done
+         * @returns null
+         */
+        function update(source) {
+
+            var treeData = treemap(root);
+
+            var nodes = treeData.descendants(),
+                links = treeData.descendants().slice(1);
+
+            // each parent-child layer in the tree is a fixed distance
+            nodes.forEach(function (d) {
+                d.y = d.depth * 180
+            });
+
+            // update the nodes with an id
+            var node = svg.selectAll('g.node')
+                .data(nodes, function (d) {
+                    return d.id || (d.id = ++i);
+                });
+
+            var nodeEnter = node.enter().append('g')
+                .attr('class', 'node')
+                .attr("transform", function (d) {
+                    return "translate(" + source.y0 + "," + source.x0 + ")";
+                })
+                .on('click', click);
+
+            // add a rectangle for each new tree node and add the mouse functions
+            nodeEnter.append('rect')
+                // if the user hovers over the rectangle then change the
+                // pointer and surface the inspector view and format the details
+                // if in inspection mode
+                .on("mouseover", function (d) {
+                    d3.select(this).style("cursor", "pointer");
+                    if (currentMode === mode.INSPECT) {
+                        var t = d3.select(this)
+                        inspectorNode.style('opacity', 1.0)
+                            .attr('x', d.y0 + 28)
+                            .attr('y', d.x0 - 60)
+                        formatDetails(d3.select("#g2"), d)
+                    }
+                })
+                // When leaving the rectangle restore the mouse pointer
+                .on("mouseout", function (d) {
+                    d3.select(this).style("cursor", "default");
+                })
+
+            // use the Helm chart name or image name for the node label
+            nodeEnter.append('text')
+                .attr("dy", ".35em")
+                .attr("x", function (d) {
+                    return -42
+                })
+                .text(function (d) {
+                    return d.data.name
+                });
+
+            var nodeUpdate = nodeEnter.merge(node);
+
+            // move the updated nodes to where they should be
+            nodeUpdate.transition()
+                .duration(duration)
+                .attr("transform", function (d) {
+                    return "translate(" + d.y + "," + d.x + ")";
+                })
+
+            // set the rectangle color to provide an indicator of whether a node
+            // has visible children or not so the user knows whether there is more
+            // information available by clicking on the node in navigation mode.
+            nodeUpdate.select("rect").style("fill", function (d) {
+                return d._children ? "lightgrey" : "#fff";
+            })
+
+            // remove any nodes that should disappear because of collapsing
+            var nodeExit = node.exit().transition()
+                .duration(duration)
+                .attr("transform", function (d) {
+                    return "translate(" + source.y + "," + source.x + ")";
+                })
+                .remove();
+
+            // on exit reduce the opacity of text labels
+            // to avoid the user seeing the text as it is
+            // replaced which would look weird
+            nodeExit.select('text')
+                .style('fill-opacity', 1e-6);
+
+            var link = svg.selectAll('path.link')
+                .data(links, function (d) {
+                    return d.id;
+                });
+
+            // attach any new nodes that have appeared
+            var linkEnter = link.enter().insert('path', "g")
+                .attr("class", "link")
+                .attr('d', function (d) {
+                    var o = {x: source.x0, y: source.y0}
+                    return diagonal(o, o)
+                });
+
+            var linkUpdate = linkEnter.merge(link);
+
+            linkUpdate.transition()
+                .duration(duration)
+                .attr('d', function (d) {
+                    return diagonal(d, d.parent)
+                });
+
+            // remove any links that should disappear because of collapsing
+            var linkExit = link.exit().transition()
+                .duration(duration)
+                .attr('d', function (d) {
+                    var o = {x: source.x, y: source.y}
+                    return diagonal(o, o)
+                })
+                .remove();
+
+            nodes.forEach(function (d) {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+
+            /**
+             * Compute a path that will produce a pleasing
+             * smooth line
+             *
+             * @param {object} s coordinates
+             * @param {object} d coordinates
+             * @returns null
+             */
+            function diagonal(s, d) {
+                path = `M ${s.y} ${s.x}
+                            C ${(s.y + d.y) / 2} ${s.x},
+                              ${(s.y + d.y) / 2} ${d.x},
+                              ${d.y} ${d.x}`
+                return path
+            }
+
+            /**
+             * Handle click event by toggling the children's visibility
+             * _children is the pointer to hidden children
+             * children is the pointer to visible children
+             *
+             * @param {object} d the node data
+             * @returns null
+             */
+            function click(d) {
+                if (d.children) {
+                    d._children = d.children;
+                    d.children = null;
+                } else {
+                    d.children = d._children;
+                    d._children = null;
+                }
+                update(d);
+            }
+
+            /**
+             * Formats the description for a single node in the tree when in
+             * inspection mode
+             *
+             * @param {object} t the element to append to.  Note this is an element
+             *                   that is selected using d3.select, not a DOM element
+             * @return null
+             */
+            function formatDetails(t, d) {
+                // create a foreign object so html can be used for text formatting
+                // of the node details
+                fo = t.append('foreignObject')
+                    .attr("id", "fo")
+                    .attr('x', d.y0 + 30)
+                    .attr('y', d.x0 - 70)
+                    .attr("height", detailsHeight)
+                    .attr("width", detailsWidth - 3)
+                    // on mouse out move the inspector out of the way and then remove the foreign object itself
+                    .on("mouseout", function (d) {
+                        d3.select("#i1")
+                            .style('opacity', 0)
+                            .attr('x', -800)
+                            .attr('y', -800)
+                        d3.select("#fo")
+                            .remove()
+                    })
+                var div = fo.append('xhtml:div')
+                    .append('div')
+                var p = div.append("p")
+                    .attr('class', 'detailstext')
+
+                // format the details using html
+                var s = "<h2 style=\"text-align:center\">" + d.data["name"] + "<hr></h2>"
+                for (var key in d.data) {
+                    if (key != "children") {
+                        var v = d.data[key]
+                        s += "&nbsp;" + key + ": " + d.data[key] + "<br/>"
+                    }
+                }
+                p.html(s)
+            }
+        }
+    })
+</script>
+</body>
