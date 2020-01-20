@@ -3,17 +3,7 @@
 
 This page provides an interactive tree view of a Kubernetes Helm chart and its dependencies.
 
-The tree view is loaded from a JSON representation of the Helm chart such as can be generated from
-https://github.com/Alfresco/alfresco-anaxes-chartmap.  The tree is created using D3.
-
-The user starts out in 'navigation' mode in which the user
-can click through the nodes of the tree to see the relationships between a Helm chart and its dependencies
-as well as the Docker Images on which a Helm chart depends.  The user can then elect to go into an
-'inspection' mode in which the details of a Helm Chart or Docker image can be viewed by hovering the
-mouse pointer over a node in the tree.
-
-This was inspired by https://bl.ocks.org/d3noob/1a96af738c89b88723eb63456beb6510
-which was in turn inspired by https://observablehq.com/@d3/collapsible-tree.
+See https://github.com/melahn/helm-inspector for details
 
 -->
 <meta charset="UTF-8">
@@ -49,7 +39,7 @@ which was in turn inspired by https://observablehq.com/@d3/collapsible-tree.
         stroke: black;
         stroke-width: 3px;
         height: 80px;
-        width: 130px;
+        width: 200px;
         x: -60;
         y: -40;
         rx: 8; /* I like rounded corners */
@@ -83,8 +73,8 @@ which was in turn inspired by https://observablehq.com/@d3/collapsible-tree.
 
     // setup the parameters of the tree
     var margin = {top: 20, right: 90, bottom: 30, left: 120},
-        width = 1200 - margin.left - margin.right,
-        height = 900 - margin.top - margin.bottom;
+        width = 1800 - margin.left - margin.right,
+        height = 1600 - margin.top - margin.bottom;
 
     // create a place holder to show errors
     var svg = d3.select("body").append("div").append("p").attr("id", "errorMsg")
@@ -226,7 +216,7 @@ which was in turn inspired by https://observablehq.com/@d3/collapsible-tree.
 
             // each parent-child layer in the tree is a fixed distance
             nodes.forEach(function (d) {
-                d.y = d.depth * 180
+                d.y = d.depth * 270  // TODO derive from style sheets rect width value
             });
 
             // update the nodes with an id
@@ -405,11 +395,19 @@ which was in turn inspired by https://observablehq.com/@d3/collapsible-tree.
 
                 // format the details using html
                 var s = "<h2 style=\"text-align:center\">" + d.data["name"] + "<hr></h2>"
+                var i=0;  // line counter of actual text
                 for (var key in d.data) {
                     if (key != "children") {
                         var v = d.data[key]
                         s += "&nbsp;" + key + ": " + d.data[key] + "<br/>"
+                        i++;
                     }
+                }
+                // pad the rectangle with spaces so the mouse doesn't get confused
+                // by the underlying rectangle
+                while (++i<13) {
+                    for (var j=0,z="";j<74;j++) {z+="&nbsp;"}
+                    s+="<br/>"+ z;
                 }
                 p.html(s)
             }

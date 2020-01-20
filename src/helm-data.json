@@ -1,0 +1,89 @@
+{
+  "children": [
+    {
+      "children": [
+        {
+          "children": [],
+          "name": "alfresco-digital-workspace:2.2.0",
+          "shortName": "alfresco-digital-workspace",
+          "version": "2.2.0"
+        },
+        {
+          "children": [],
+          "name": "alfresco-search:1.0.1",
+          "shortName": "alfresco-search",
+          "version": "1.0.1"
+        },
+        {
+          "children": [],
+          "name": "postgresql:0.9.3",
+          "shortName": "postgresql",
+          "version": "0.9.3"
+        },
+        {
+          "children": [{
+            "children": [],
+            "name": "postgresql:0.9.3",
+            "shortName": "postgresql",
+            "version": "0.9.3"
+          }],
+          "name": "alfresco-sync-service:1.1.1",
+          "shortName": "alfresco-sync-service",
+          "version": "1.1.1"
+        }
+      ],
+      "name": "alfresco-content-services:2.1.3",
+      "shortName": "alfresco-content-services",
+      "version": "2.1.3"
+    },
+    {
+      "children": [
+        {
+          "children": [],
+          "name": "nginx-ingress:0.14.0",
+          "shortName": "nginx-ingress",
+          "version": "0.14.0"
+        },
+        {
+          "children": [{
+            "children": [{
+              "children": [],
+              "name": "postgresql:0.15.0",
+              "shortName": "postgresql",
+              "version": "0.15.0"
+            }],
+            "name": "keycloak:4.3.0",
+            "shortName": "keycloak",
+            "version": "4.3.0"
+          }],
+          "name": "alfresco-identity-service:1.1.0",
+          "shortName": "alfresco-identity-service",
+          "version": "1.1.0"
+        },
+        {
+          "children": [],
+          "name": "activemq:1.1.1",
+          "shortName": "activemq",
+          "version": "1.1.1"
+        }
+      ],
+      "name": "alfresco-infrastructure:4.1.1",
+      "shortName": "alfresco-infrastructure",
+      "version": "4.1.1"
+    },
+    {
+      "children": [{
+        "children": [],
+        "name": "postgresql:1.0.0",
+        "shortName": "postgresql",
+        "version": "1.0.0"
+      }],
+      "name": "alfresco-process-services:0.2.0",
+      "shortName": "alfresco-process-services",
+      "version": "0.2.0"
+    }
+  ],
+  "name": "alfresco-dbp:1.5.0",
+  "shortName": "alfresco-dbp",
+  "version": "1.5.0"
+}
