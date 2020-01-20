@@ -68,19 +68,19 @@ See https://github.com/melahn/helm-inspector for details
 <body>
 
 <!-- load the d3.js V5 library -->
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 <script>
 
     // setup the parameters of the tree
     var margin = {top: 20, right: 90, bottom: 30, left: 120},
         width = 1800 - margin.left - margin.right,
-        height = 1600 - margin.top - margin.bottom;
+        height = 3000 - margin.top - margin.bottom;
 
     // create a place holder to show errors
-    var svg = d3.select("body").append("div").append("p").attr("id", "errorMsg")
+    var errorMsgSvg = d3.select("body").append("div").append("p").attr("id", "errorMsg");
 
     // create a place holder for the mode selector
-    var svg = d3.select("body").append("div").append("p").attr("id", "selector")
+    var selectorSvg = d3.select("body").append("div").append("p").attr("id", "selector");
 
     // create an svg for the tree to live in
     var svg = d3.select("body").append("svg")
@@ -96,15 +96,12 @@ See https://github.com/melahn/helm-inspector for details
         detailsHeight = 290,  // controls the height of the details shown in 'inspection node'
         detailsWidth = 400,   // controls the width of the details shown in 'inspection node'
         root, // the root of the tree
+        MAXNAMELENGTH = 30, // max name of chart or image to be displayed in details
         treeData // where the data is loaded
 
     // declares a tree layout and assigns the size
-    var treemap = d3.tree().size([height, width]);
-    d3.json(fileName, function (error, treeData) {
-        if (error) {
-            d3.select("#errorMsg").text(error + "Error loading file \"" + fileName + "\"")
-            throw error
-        }
+    var treeMap = d3.tree().size([height, width]);
+    d3.json(fileName).then(function(treeData) {
 
         // Assign the tree root and position it in the middle of
         // svg
@@ -128,14 +125,14 @@ See https://github.com/melahn/helm-inspector for details
             .attr('x', -800)
             .attr('y', -800)
             .attr('class', 'inspector')
-            .style('opacity', '0')
+            .style('opacity', '0');
 
         // When the user hovers over the inspector set the opacity so it pops
         d3.select("#i1")
             .on('mouseover', function (d) {
                 if (currentMode === mode.INSPECT) {
-                    d3.select("#i1").style('opacity', 1.0)
-                    d3.select(this).style("cursor", "pointer");
+                    d3.select("#i1").style('opacity', 1.0);
+                    d3.select(this).style("cursor", "pointer")
                 }
             })
 
@@ -158,14 +155,14 @@ See https://github.com/melahn/helm-inspector for details
             .attr('id', 'g1')
             .append('rect')
             .attr('class', 'selector')
-            .attr('id', 'selectorMode')
+            .attr('id', 'selectorMode');
         d3.select('#g1')
             .on('click', selectMode)
             .append('text')
             .attr('id', 'selectorText')
             .text(currentMode)
             .attr('x', 40)
-            .attr('y', 55)
+            .attr('y', 55);
 
         /**
          * Set the current mode (inspect or navigate)
@@ -174,11 +171,11 @@ See https://github.com/melahn/helm-inspector for details
          * @returns null
          */
         function selectMode() {
-            if (currentMode == mode.NAVIGATE) {
-                currentMode = mode.INSPECT
+            if (currentMode === mode.NAVIGATE) {
+                currentMode = mode.INSPECT;
                 d3.select('#selectorMode').style('fill', 'yellow')
             } else {
-                currentMode = mode.NAVIGATE
+                currentMode = mode.NAVIGATE;
                 d3.select('#selectorMode').style('fill', 'lightgreen')
             }
             d3.select('#selectorText').text(currentMode)
@@ -192,8 +189,8 @@ See https://github.com/melahn/helm-inspector for details
          */
         function collapse(d) {
             if (d.children) {
-                d._children = d.children
-                d._children.forEach(collapse)
+                d._children = d.children;
+                d._children.forEach(collapse);
                 d.children = null
             }
         }
@@ -209,7 +206,7 @@ See https://github.com/melahn/helm-inspector for details
          */
         function update(source) {
 
-            var treeData = treemap(root);
+            var treeData = treeMap(root);
 
             var nodes = treeData.descendants(),
                 links = treeData.descendants().slice(1);
@@ -222,7 +219,7 @@ See https://github.com/melahn/helm-inspector for details
             // update the nodes with an id
             var node = svg.selectAll('g.node')
                 .data(nodes, function (d) {
-                    return d.id || (d.id = ++i);
+                    return d.id || (d.id = ++i)
                 });
 
             var nodeEnter = node.enter().append('g')
@@ -240,16 +237,16 @@ See https://github.com/melahn/helm-inspector for details
                 .on("mouseover", function (d) {
                     d3.select(this).style("cursor", "pointer");
                     if (currentMode === mode.INSPECT) {
-                        var t = d3.select(this)
+                        var t = d3.select(this);
                         inspectorNode.style('opacity', 1.0)
                             .attr('x', d.y0 + 28)
-                            .attr('y', d.x0 - 60)
+                            .attr('y', d.x0 - 60);
                         formatDetails(d3.select("#g2"), d)
                     }
                 })
                 // When leaving the rectangle restore the mouse pointer
                 .on("mouseout", function (d) {
-                    d3.select(this).style("cursor", "default");
+                    d3.select(this).style("cursor", "default")
                 })
 
             // use the Helm chart name or image name for the node label
@@ -259,7 +256,7 @@ See https://github.com/melahn/helm-inspector for details
                     return -42
                 })
                 .text(function (d) {
-                    return d.data.name
+                    return truncateName(d.data.name, MAXNAMELENGTH);
                 });
 
             var nodeUpdate = nodeEnter.merge(node);
@@ -268,14 +265,14 @@ See https://github.com/melahn/helm-inspector for details
             nodeUpdate.transition()
                 .duration(duration)
                 .attr("transform", function (d) {
-                    return "translate(" + d.y + "," + d.x + ")";
+                    return "translate(" + d.y + "," + d.x + ")"
                 })
 
             // set the rectangle color to provide an indicator of whether a node
             // has visible children or not so the user knows whether there is more
             // information available by clicking on the node in navigation mode.
             nodeUpdate.select("rect").style("fill", function (d) {
-                return d._children ? "lightgrey" : "#fff";
+                return d._children ? "lightgrey" : "#fff"
             })
 
             // remove any nodes that should disappear because of collapsing
@@ -284,7 +281,7 @@ See https://github.com/melahn/helm-inspector for details
                 .attr("transform", function (d) {
                     return "translate(" + source.y + "," + source.x + ")";
                 })
-                .remove();
+                .remove()
 
             // on exit reduce the opacity of text labels
             // to avoid the user seeing the text as it is
@@ -301,7 +298,7 @@ See https://github.com/melahn/helm-inspector for details
             var linkEnter = link.enter().insert('path', "g")
                 .attr("class", "link")
                 .attr('d', function (d) {
-                    var o = {x: source.x0, y: source.y0}
+                    var o = {x: source.x0, y: source.y0};
                     return diagonal(o, o)
                 });
 
@@ -317,7 +314,7 @@ See https://github.com/melahn/helm-inspector for details
             var linkExit = link.exit().transition()
                 .duration(duration)
                 .attr('d', function (d) {
-                    var o = {x: source.x, y: source.y}
+                    var o = {x: source.x, y: source.y};
                     return diagonal(o, o)
                 })
                 .remove();
@@ -339,7 +336,7 @@ See https://github.com/melahn/helm-inspector for details
                 path = `M ${s.y} ${s.x}
                             C ${(s.y + d.y) / 2} ${s.x},
                               ${(s.y + d.y) / 2} ${d.x},
-                              ${d.y} ${d.x}`
+                              ${d.y} ${d.x}`;
                 return path
             }
 
@@ -368,6 +365,7 @@ See https://github.com/melahn/helm-inspector for details
              *
              * @param {object} t the element to append to.  Note this is an element
              *                   that is selected using d3.select, not a DOM element
+             * @param {object} d the data object
              * @return null
              */
             function formatDetails(t, d) {
@@ -384,33 +382,128 @@ See https://github.com/melahn/helm-inspector for details
                         d3.select("#i1")
                             .style('opacity', 0)
                             .attr('x', -800)
-                            .attr('y', -800)
+                            .attr('y', -800);
                         d3.select("#fo")
                             .remove()
                     })
                 var div = fo.append('xhtml:div')
-                    .append('div')
+                    .append('div');
                 var p = div.append("p")
-                    .attr('class', 'detailstext')
+                    .attr('class', 'detailstext');
 
                 // format the details using html
-                var s = "<h2 style=\"text-align:center\">" + d.data["name"] + "<hr></h2>"
-                var i=0;  // line counter of actual text
-                for (var key in d.data) {
-                    if (key != "children") {
-                        var v = d.data[key]
-                        s += "&nbsp;" + key + ": " + d.data[key] + "<br/>"
-                        i++;
-                    }
+                var s = "<h2 style=\"text-align:center\">" + d.data["name"] + "<hr></h2>";
+                var i = 0;  // line counter of actual text
+
+                // the reason I don't just iterate through the array of values in the JSON
+                // file is that order of those elemenets is random and I want them in a
+                // prescribed order; I also want to filter the properties by type
+                var details;
+                if (d.data["type"] === "chart") {
+                    details = formatChartDetails(d)
                 }
+                else {
+                    details = formatImageDetails(d)
+                }
+                s += details["details"];
+                i += details["lines"];
                 // pad the rectangle with spaces so the mouse doesn't get confused
                 // by the underlying rectangle
-                while (++i<13) {
-                    for (var j=0,z="";j<74;j++) {z+="&nbsp;"}
-                    s+="<br/>"+ z;
+                while (++i < 13) {
+                    for (var j = 0, z =""; j < 74; j++) { z+="x&nbsp;"}
+                    s+="<br/>"+ z
                 }
                 p.html(s)
             }
+            /**
+             * Formats the description for a chart
+             *
+             * @param {object} d the data for the element
+             * @return {object} object containing the details and the number of lines
+             */
+            function formatChartDetails(d) {
+                // if the name is really long then truncate.  The full name is in the header anyway
+                var s = "&nbsp;" + "name" + ": " + d.data["name"] + "<br/>";
+                s += "&nbsp;" + "type" + ": " + d.data["type"] + "<br/>";
+                s += "&nbsp;" + "version" + ": " + d.data["version"] + "<br/>";
+                s += "&nbsp;" + "description" + ": " + formatValue(d.data["description"]) + "<br/>";
+                s += "&nbsp;" + "maintainers" + ": " + formatMaintainers(d.data["maintainers"]) + "<br/>";
+                s += "&nbsp;" + "keywords" + ": " + formatValue(d.data["keywords"]) + "<br/>";
+                return {"details":s, "lines": 6}
+            }
+            /**
+             * Formats the description for an image
+             *
+             * @param {object} d the data for the element
+             * @return {object} object containing the details and the number of lines
+             */
+            function formatImageDetails(d) {
+                // if the name is really long then truncate.  The full name is in the header anyway
+                var s = "&nbsp;" + "name" + ": " + d.data["name"] + "<br/>";
+                s += "&nbsp;" + "type" + ": " + d.data["type"] + "<br/>";
+                s += "&nbsp;" + "version" + ": " + formatValue(d.data["version"]) + "<br/>";
+                s += "&nbsp;" + "repoHost" + ": " + formatValue(d.data["repoHost"]) + "<br/>";
+                return {"details":s, "lines": 4}
+            }
+
+            /**
+             * Provides a readable version of a value by, for example,
+             * checking for null
+             *
+             * @param {object} s the string to be formatted
+             * @return string containing more readable version of the string
+             */
+            function formatValue(s) {
+                if (s == null) {
+                    return "not specified"
+                }
+                return s
+            }
+
+            /**
+             * Provides a readable version of the maintainers property
+             * checking for null
+             *
+             * @param {object} a an array of maintainers
+             * @return string containing more readable version of the string
+             */
+            function formatMaintainers(a) {
+                if (a == null) {
+                    return "not specified";
+                }
+                // otherwise this is array of maintainers objects which
+                // may be just email or both name and email
+                var s = "&nbsp;";
+                for (var i in a)
+                {
+                    if (i > 0) { s += ","}
+                    var name = a[i]["name"];
+                    var email = a[i]["email"];
+                    if (email != null) {
+                        s += name + "(" + email + ")";
+                    } else {
+                        s += name;
+                    }
+                }
+                return s
+            }
+            /**
+             * Shortens a name, adding an ellipsis if needed
+             *
+             * @param {string} s the string to be shortened
+             * @param {int} n max size of the string before shortening will be done
+             * @return string containing more readable version of the string
+             */
+             function truncateName(s, n) {
+                 var t;
+                 var e = "...";
+                 if (s.length > n) {
+                     t = s.substring(0, n-e.length);
+                     t += e;
+                     return t;
+                 }
+                 return s;
+             }
         }
     })
 </script>

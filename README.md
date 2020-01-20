@@ -8,7 +8,7 @@ such as can be generated from
 https://github.com/Alfresco/alfresco-anaxes-chartmap, though any properly formed JSON 
 representation will work. See [JSON Model](#json-model)
 
-The tree view is created using [D3](https://d3js.org/).
+The tree view is created using [D3](https://d3js.org/) Version 5.
 
 The user starts out in *navigation* mode in which the user
 can click through the nodes of the tree to see the relationships between a Helm chart and its dependencies
