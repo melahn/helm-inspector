@@ -16,6 +16,13 @@ as well as the Docker images on which a Helm chart depends.  The user can then e
 *inspection* mode in which the details of a Helm chart or Docker image can be viewed by hovering the
 mouse pointer over a node in the tree.
 
+### Usage
+1. Download the two files 'helm-inspector.json' and 'helm-data.json'
+2. Open the file 'helm-inspector.json' in a browser
+
+You can generate different 'helm-data.json' files using https://github.com/Alfresco/alfresco-anaxes-chartmap
+or create one any way you want as long as the file conforms to the [JSON Model](#json-model).
+
 ### <a name="json-model"></a>JSON Model
 The file containing the helm data must be in a file named 'helm-data.json' accessible from the html
 page.  
@@ -24,13 +31,13 @@ The file contains a single JSON object representing the helm tree.
 
 Each JSON element with properties represents a Helm chart or a Docker images used by a chart.
 
-Each JSON element that represents a chart or a image must have a 'name' property which is
+Each JSON element that represents a chart or an image must have a 'name' property which is
 the full name of the chart or image including a version if applicable.
 
-Each JSON element that represents a chart or a image must have a 'type' property which has a value
+Each JSON element that represents a chart or an image must have a 'type' property which has a value
 of 'chart' or 'image', denoting the type of element.
 
-Each JSON element that represents must a chart or a image must have a 'children' property containing 
+Each JSON element that represents a chart or an image must have a 'children' property containing 
 an array of the child elements of that chart or image, if any.  If there are no child elements, then
 the array should be empty, but it still must be present.
 
