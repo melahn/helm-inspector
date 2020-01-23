@@ -27,10 +27,10 @@ Pressing the 'i' key puts you in 'inspect' mode.  In this mode, hovering over a 
 
 Pressing the 'n' key puts you back in 'navigate' mode.
 
-#### Inspect Mode Example
-![Inspect Mode Example](./resources/inspect-mode-example.png)
 #### Navigate Mode Example
 ![Navigate Mode Example](./resources/navigate-mode-example.png)
+#### Inspect Mode Example
+![Inspect Mode Example](./resources/inspect-mode-example.png)
 
 *Note*: You can generate different 'helm-data.json' files using https://github.com/Alfresco/alfresco-anaxes-chartmap
 or create one any way you want as long as the file conforms to the [JSON Model](#json-model).
