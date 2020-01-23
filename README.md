@@ -20,7 +20,19 @@ mouse pointer over a node in the tree.
 1. Download the two files 'helm-inspector.json' and 'helm-data.json'
 2. Open the file 'helm-inspector.json' in a browser
 
-You can generate different 'helm-data.json' files using https://github.com/Alfresco/alfresco-anaxes-chartmap
+You start out in 'navigate mode'.  Clicking on a dark node in the tree expands the node to see the children.
+Clicking on an expanded node collapses the node, hiding the children.
+
+Pressing the 'i' key puts you in 'inspect' mode.  In this mode, hovering over a node shows details of that node.
+
+Pressing the 'n' key puts you back in 'navigate' mode.
+
+#### Inspect Mode Example
+![Inspect Mode Example](./resources/inspect-mode-example.png)
+#### Navigate Mode Example
+![Navigate Mode Example](./resources/navigate-mode-example.png)
+
+*Note*: You can generate different 'helm-data.json' files using https://github.com/Alfresco/alfresco-anaxes-chartmap
 or create one any way you want as long as the file conforms to the [JSON Model](#json-model).
 
 ### <a name="json-model"></a>JSON Model
