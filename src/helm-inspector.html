@@ -64,7 +64,7 @@ See https://github.com/melahn/helm-inspector for details
         height = 3000 - margin.top - margin.bottom;
 
     // create a place holder to show the mode
-    var selectorMsgSvg = d3.select("body").append("div").attr("id","sd").append("p").attr("id", "selectorMsg1");
+    d3.select("body").append("div").attr("id", "sd").append("p").attr("id", "selectorMsg1");
     d3.select("#sd").append("p").attr("id", "selectorMsg2");
     d3.select("#sd").append("p").attr("id", "selectorMsg3");
 
@@ -126,7 +126,13 @@ See https://github.com/melahn/helm-inspector for details
 
     // declares a tree layout and assigns the size
     var treeMap = d3.tree().size([height, width]);
-    d3.json(fileName).then(function(treeData) {
+    d3.json(fileName).then(function (treeData) {
+
+        // Get some stats about the shape of the tree
+        var chartCount = 1, imageCount = 0, depthCount = 1;
+        var treeLevels = new Map();  // This is a map of how may elements are at each level
+        treeLevels.set(1, 1) // level 1 always has one element in it
+        treeStats(treeData, 1); // recursively get tree stats
 
         // Assign the tree root and position it in the middle of
         // svg
@@ -161,7 +167,7 @@ See https://github.com/melahn/helm-inspector for details
                 }
             })
 
-      .attr('y', 55);
+            .attr('y', 55);
 
         /**
          * Collapse a node and all its children
@@ -175,6 +181,38 @@ See https://github.com/melahn/helm-inspector for details
                 d._children.forEach(collapse);
                 d.children = null
             }
+        }
+
+        /**
+         * Collect some stats about the tree
+         *
+         * @param {int} t the tree node at this iteration
+         * @param (int} l the current depth
+         * @returns null
+         */
+        function treeStats(t,l) {
+            var p = l; // the current depth (plumb)
+            if (p > depthCount) {
+                depthCount = p; // remember the max depth
+            }
+            if (t["type"] === "chart") {
+                chartCount++
+            } else {
+                imageCount++
+            }
+            var i = 0;  // need to reference this later
+            for (; i < t["children"].length; i++) {
+                if (i == 0) {
+                    p++;
+                }
+                treeStats(t["children"][i], p);
+            }
+            // we are at depth p and found i nodes
+            // update the map that keeps track of how
+            // many nodes are at each level
+            var j = treeLevels.get(p);
+            j = (j == null) ? j = i : j = i + j;
+            treeLevels.set(p, j);
         }
 
         // update the tree starting with the root node
@@ -383,8 +421,7 @@ See https://github.com/melahn/helm-inspector for details
                 var details;
                 if (d.data["type"] === "chart") {
                     details = formatChartDetails(d)
-                }
-                else {
+                } else {
                     details = formatImageDetails(d)
                 }
                 s += details["details"];
@@ -392,11 +429,14 @@ See https://github.com/melahn/helm-inspector for details
                 // pad the rectangle with spaces so the mouse doesn't get confused
                 // by the underlying rectangle
                 while (++i < 13) {
-                    for (var j = 0, z =""; j < 74; j++) { z+="&nbsp;"}
-                    s+="<br/>"+ z
+                    for (var j = 0, z = ""; j < 74; j++) {
+                        z += "&nbsp;"
+                    }
+                    s += "<br/>" + z
                 }
                 p.html(s)
             }
+
             /**
              * Formats the description for a chart
              *
@@ -411,8 +451,9 @@ See https://github.com/melahn/helm-inspector for details
                 s += "&nbsp;" + "description" + ": " + formatValue(d.data["description"]) + "<br/>";
                 s += "&nbsp;" + "maintainers" + ": " + formatMaintainers(d.data["maintainers"]) + "<br/>";
                 s += "&nbsp;" + "keywords" + ": " + formatValue(d.data["keywords"]) + "<br/>";
-                return {"details":s, "lines": 6}
+                return {"details": s, "lines": 6}
             }
+
             /**
              * Formats the description for an image
              *
@@ -425,7 +466,7 @@ See https://github.com/melahn/helm-inspector for details
                 s += "&nbsp;" + "type" + ": " + d.data["type"] + "<br/>";
                 s += "&nbsp;" + "version" + ": " + formatValue(d.data["version"]) + "<br/>";
                 s += "&nbsp;" + "repoHost" + ": " + formatValue(d.data["repoHost"]) + "<br/>";
-                return {"details":s, "lines": 4}
+                return {"details": s, "lines": 4}
             }
 
             /**
@@ -456,9 +497,10 @@ See https://github.com/melahn/helm-inspector for details
                 // otherwise this is array of maintainers objects which
                 // may be just email or both name and email
                 var s = "&nbsp;";
-                for (var i in a)
-                {
-                    if (i > 0) { s += ","}
+                for (var i in a) {
+                    if (i > 0) {
+                        s += ","
+                    }
                     var name = a[i]["name"];
                     var email = a[i]["email"];
                     if (email != null) {
@@ -469,6 +511,7 @@ See https://github.com/melahn/helm-inspector for details
                 }
                 return s
             }
+
             /**
              * Shortens a name, adding an ellipsis if needed
              *
@@ -476,16 +519,16 @@ See https://github.com/melahn/helm-inspector for details
              * @param {int} n max size of the string before shortening will be done
              * @return string containing more readable version of the string
              */
-             function truncateName(s, n) {
-                 var t;
-                 var e = "...";
-                 if (s.length > n) {
-                     t = s.substring(0, n-e.length);
-                     t += e;
-                     return t;
-                 }
-                 return s;
-             }
+            function truncateName(s, n) {
+                var t;
+                var e = "...";
+                if (s.length > n) {
+                    t = s.substring(0, n - e.length);
+                    t += e;
+                    return t;
+                }
+                return s;
+            }
         }
     })
 </script>
