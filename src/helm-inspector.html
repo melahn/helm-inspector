@@ -63,10 +63,8 @@ See https://github.com/melahn/helm-inspector for details
         width = 1800 - margin.left - margin.right,
         height = 3000 - margin.top - margin.bottom;
 
-    // create a place holder to show the mode
-    d3.select("body").append("div").attr("id", "sd").append("p").attr("id", "selectorMsg1");
-    d3.select("#sd").append("p").attr("id", "selectorMsg2");
-    d3.select("#sd").append("p").attr("id", "selectorMsg3");
+    // create a place holder to show the mode and some instructions
+    d3.select("body").append("div").append("p").attr("id", "selectorMsg");
 
     // create an svg for the tree to live in
     var svg = d3.select("body").append("svg")
@@ -82,38 +80,23 @@ See https://github.com/melahn/helm-inspector for details
         NAVIGATE: 'Navigate',
         INSPECT: 'Inspect',
     }
-    var navMsg1 = "Current Mode: Navigate";
-    var navMsg2 = "Click on a node to expand or collapse it";
-    var navMsg3 = "Press the 'i' key to go into 'Inspect' mode";
-    var insMsg1 = "Current Mode: Inspect";
-    var insMsg2 = "Hover over a node to see details";
-    var insMsg3 = "Press the 'n' key to go into 'Navigate' mode";
 
-    // Start out in 'Navigate' mode
-    var currentMode = mode.NAVIGATE;
-    d3.select("#selectorMsg1").text(navMsg1);
-    d3.select("#selectorMsg2").text(navMsg2);
-    d3.select("#selectorMsg3").text(navMsg3)
+    writeNavigateMsg();
 
     d3.select('body')
         .on("keypress", function () {
             if (d3.event.key === "i") {
                 currentMode = mode.INSPECT;
-                d3.select("#selectorMsg1").text(insMsg1);
-                d3.select("#selectorMsg2").text(insMsg2);
-                d3.select("#selectorMsg3").text(insMsg3);
+                writeInspectMsg();
 
             } else if (d3.event.key === "n") {
                 currentMode = mode.NAVIGATE;
-                d3.select("#selectorMsg1").text(navMsg1);
-                d3.select("#selectorMsg2").text(navMsg2);
-                d3.select("#selectorMsg3").text(navMsg3);
+                writeNavigateMsg();
 
             } else {
                 // do nothing
             }
         });
-
 
     var i = 0, // used for node id's
         fileName = "helm-data.json", // the name of the file containing the helm data
@@ -190,7 +173,7 @@ See https://github.com/melahn/helm-inspector for details
          * @param (int} l the current depth
          * @returns null
          */
-        function treeStats(t,l) {
+        function treeStats(t, l) {
             var p = l; // the current depth (plumb)
             if (p > depthCount) {
                 depthCount = p; // remember the max depth
@@ -416,7 +399,7 @@ See https://github.com/melahn/helm-inspector for details
                 var i = 0;  // line counter of actual text
 
                 // the reason I don't just iterate through the array of values in the JSON
-                // file is that order of those elemenets is random and I want them in a
+                // file is that order of those elements is random and I want them in a
                 // prescribed order; I also want to filter the properties by type
                 var details;
                 if (d.data["type"] === "chart") {
@@ -531,5 +514,55 @@ See https://github.com/melahn/helm-inspector for details
             }
         }
     })
+
+    /**
+     * Writes some information about the Navigation mode
+     *
+     * @returns null
+     */
+    function writeNavigateMsg() {
+        var s = "<p>Current Mode: <span style=\"font-weight: bold;\">Navigate</span></p>";
+        s += "<p>Click on a node to expand or collapse it</p>";
+        s += "Press the <span style=\"font-weight: bold;\">'i'</span> key to go into 'Inspect' mode</p>";
+        writeHtml("selectorMsg", s)
+    }
+
+    /**
+     * Writes some information about the Inspect mode
+     *
+     * @returns null
+     */
+    function writeInspectMsg() {
+        var s = "<p>Current Mode: <span style=\"font-weight: bold;\">Inspect</span></p>";
+        s += "<p>Hover over a node to see details about it</p>";
+        s += "Press the <span style=\"font-weight: bold;\">'n'</span>  key to go into 'Navigate' mode</p>";
+        writeHtml("selectorMsg", s)
+    }
+
+    /**
+     * Writes some html
+     *
+     * @param {object} i the id of the object to which the html will
+     *                   be attached
+     * @param {string} h the html
+
+     * @returns null
+     */
+    function writeHtml(i, h) {
+        // check if there was html here before and remove if so
+        var fo = d3.select("#" + "selectorMsg" + "fo");
+        if (!fo.empty()) {
+            fo.remove();
+        }
+        // add a p with html
+        var p = d3.select("#" + i)
+            .append("foreignObject")
+            .attr("id", "selectorMsg" + "fo")
+            .append('div')
+            .append("p")
+            .attr('class', 'detailstext');
+        p.html(h)
+    }
+
 </script>
 </body>
