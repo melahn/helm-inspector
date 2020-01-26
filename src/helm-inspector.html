@@ -95,9 +95,7 @@ See https://github.com/melahn/helm-inspector for details
     // Start out in 'Navigate' mode
     var currentMode = mode.NAVIGATE;
     var baseChartName;
-    var chartCount = 1, imageCount = 0, depthCount = 1;
-
-    //writeNavigateMsg();
+    var chartCount = 1, imageCount = 0, depthCount = 1, widthCount=1;
 
     d3.select('body')
         .on("keypress", function () {
@@ -147,7 +145,7 @@ See https://github.com/melahn/helm-inspector for details
 
         // The tree starts up with the first two levels shown
         // TODO Think whether users want to see the whole tree first since most are pretty shallow
-        root.children.forEach(collapse);
+        //root.children.forEach(collapse);
 
         // The inspector node is what surfaces when hovering over a node
         // when in inspect mode
@@ -216,6 +214,9 @@ See https://github.com/melahn/helm-inspector for details
             var j = treeLevels.get(p);
             j = (j == null) ? j = i : j = i + j;
             treeLevels.set(p, j);
+            if (j > widthCount)  {
+                widthCount = j;
+            }
         }
 
         // update the tree starting with the root node
@@ -572,6 +573,7 @@ See https://github.com/melahn/helm-inspector for details
         s += "<br>"+ i + "Number of charts: " + chartCount;
         s += "<br>"+ i + "Number of images: " + imageCount;
         s += "<br>"+ i + "Depth: " + depthCount;
+        s += "<br>"+ i + "Width: " + widthCount;
         s += "</div>";
         return s;
     }
