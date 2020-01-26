@@ -17,8 +17,8 @@ as well as the Docker images on which a Helm chart depends.  The user can then e
 mouse pointer over a node in the tree.
 
 ### Usage
-1. Download the two files 'helm-inspector.json' and 'helm-data.json'
-2. Open the file 'helm-inspector.json' in a browser
+1. Download the two files 'helm-inspector.html' and 'helm-data.json' to a location served by a web server
+2. Open 'helm-inspector.html' in a browser
 
 You start out in 'navigate mode'.  Clicking on a dark node in the tree expands the node to see the children.
 Clicking on an expanded node collapses the node, hiding the children.
@@ -26,6 +26,11 @@ Clicking on an expanded node collapses the node, hiding the children.
 Pressing the 'i' key puts you in 'inspect' mode.  In this mode, hovering over a node shows details of that node.
 
 Pressing the 'n' key puts you back in 'navigate' mode.
+
+*Note*: If you don't see the tree view, it is possibly because the file is not
+being served by a web server (D3 fetches the file using http(s)).  You can easily start a local webserver 
+using, for example, 'python -m SimpleHTTPServer' to serve local files
+and then access the 'helm-inspector.html' from your browser using localhost.
 
 #### Navigate Mode Example
 ![Navigate Mode Example](./resources/navigate-mode-example.png)
