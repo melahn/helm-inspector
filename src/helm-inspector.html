@@ -33,7 +33,7 @@ See https://github.com/melahn/helm-inspector for details
         ry: 8; /* I like rounded corners */
     }
 
-    /* Style for default text */
+    /* Style for text using for chart or image titles */
     .node text {
         font: 12px sans-serif;
     }
@@ -48,6 +48,17 @@ See https://github.com/melahn/helm-inspector for details
         fill: none;
         stroke: #ccc;
         stroke-width: 2px;
+    }
+
+    /* Styles for the selector text */
+    .selector {
+        font: 18px sans-serif;
+    }
+    /* Style for the selector text */
+    .selector-bold {
+        font: 18px sans-serif;
+        font-weight: bold;
+        color: black;
     }
 
 </style>
@@ -81,7 +92,12 @@ See https://github.com/melahn/helm-inspector for details
         INSPECT: 'Inspect',
     }
 
-    writeNavigateMsg();
+    // Start out in 'Navigate' mode
+    var currentMode = mode.NAVIGATE;
+    var baseChartName;
+    var chartCount = 1, imageCount = 0, depthCount = 1;
+
+    //writeNavigateMsg();
 
     d3.select('body')
         .on("keypress", function () {
@@ -112,10 +128,14 @@ See https://github.com/melahn/helm-inspector for details
     d3.json(fileName).then(function (treeData) {
 
         // Get some stats about the shape of the tree
-        var chartCount = 1, imageCount = 0, depthCount = 1;
         var treeLevels = new Map();  // This is a map of how may elements are at each level
         treeLevels.set(1, 1) // level 1 always has one element in it
         treeStats(treeData, 1); // recursively get tree stats
+
+        // Save the base name of the chart to make it easy to reference and
+        // write some details about mode
+        baseChartName = treeData["name"];
+        writeNavigateMsg();
 
         // Assign the tree root and position it in the middle of
         // svg
@@ -521,9 +541,10 @@ See https://github.com/melahn/helm-inspector for details
      * @returns null
      */
     function writeNavigateMsg() {
-        var s = "<p>Current Mode: <span style=\"font-weight: bold;\">Navigate</span></p>";
-        s += "<p>Click on a node to expand or collapse it</p>";
-        s += "Press the <span style=\"font-weight: bold;\">'i'</span> key to go into 'Inspect' mode</p>";
+        var s = writeChartInfo();
+        s += "<p>Current Mode: <span class=\"selector-bold\">Navigate</span>";
+        s += "<p>Click on a node to expand or collapse it.";
+        s += "<br>Press the <span class=\"selector-bold\">'i'</span> key to go into 'Inspect' mode</p></span>";
         writeHtml("selectorMsg", s)
     }
 
@@ -533,10 +554,26 @@ See https://github.com/melahn/helm-inspector for details
      * @returns null
      */
     function writeInspectMsg() {
-        var s = "<p>Current Mode: <span style=\"font-weight: bold;\">Inspect</span></p>";
-        s += "<p>Hover over a node to see details about it</p>";
-        s += "Press the <span style=\"font-weight: bold;\">'n'</span>  key to go into 'Navigate' mode</p>";
+        var s = writeChartInfo();
+        s += "<p>Current Mode: <span class=\"selector-bold\">Inspect</span>";
+        s += "<p>Hover over a node to see details about it.";
+        s += "<br>Press the <span class=\"selector-bold\">'n'</span>  key to go into 'Navigate' mode</p></span>";
         writeHtml("selectorMsg", s)
+    }
+
+    /**
+     * Creates a line of html with some information about the Chart.
+     *
+     * @returns {string} a line of html with some information about the Chart
+     */
+    function writeChartInfo() {
+        var s = "<span class=\"selector\"><p>Base Chart: " + "<span class=\"selector-bold\">" + baseChartName + "</span>";
+        var i = "&nbsp;&nbsp;&nbsp;"
+        s += "<br>"+ i + "Number of charts: " + chartCount;
+        s += "<br>"+ i + "Number of images: " + imageCount;
+        s += "<br>"+ i + "Depth: " + depthCount;
+        s += "</div>";
+        return s;
     }
 
     /**
