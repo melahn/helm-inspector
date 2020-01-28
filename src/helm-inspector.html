@@ -113,7 +113,8 @@ See https://github.com/melahn/helm-inspector for details
         });
 
     var i = 0, // used for node id's
-        fileName = "helm-data.json", // the name of the file containing the helm data
+        filename = "helm-data.json", // the name of the file containing the helm data
+                                     // which can be overridden with a http parm
         duration = 750,  // controls the speed at which a tree node opens
         detailsHeight = 290,  // controls the height of the details shown in 'inspection node'
         detailsWidth = 400,   // controls the width of the details shown in 'inspection node'
@@ -123,8 +124,8 @@ See https://github.com/melahn/helm-inspector for details
 
     // declares a tree layout and assigns the size
     var treeMap = d3.tree().size([height, width]);
-    d3.json(fileName).then(function (treeData) {
-
+    d3.json(getFilename()).then(function (treeData) { // get the json data can drop into a function
+                                                      // to process it
         // Get some stats about the shape of the tree
         var treeLevels = new Map();  // This is a map of how may elements are at each level
         treeLevels.set(1, 1) // level 1 always has one element in it
@@ -144,7 +145,7 @@ See https://github.com/melahn/helm-inspector for details
         root.y0 = 0;
 
         // The tree starts up with the first two levels shown
-        // TODO Think whether users want to see the whole tree first since most are pretty shallow
+        // TODO Think more whether users want to see the whole tree first ... most are pretty shallow
         //root.children.forEach(collapse);
 
         // The inspector node is what surfaces when hovering over a node
@@ -601,6 +602,25 @@ See https://github.com/melahn/helm-inspector for details
             .append("p")
             .attr('class', 'detailstext');
         p.html(h)
+    }
+
+    /**
+     * Returns the name of the file containing JSON data for
+     * the chart.  First a url parm named 'chart' is looked for.
+     * That is returned if found.  Otherwise the default filename
+     * is returned.
+     *
+     * @returns {string} the name of the file containing JSON data for
+     * the chart
+     */
+    function getFilename()
+    {
+        var f = filename; // use the default name unless an http parm named 'chart' is found
+        for (var i = 0, q = window.location.search.substring(1), v = q.split("&");i < v.length;i++) {
+            var p = v[i].split("=");
+            if(p[0] === "chart"){f = p[1] + ".json";break;}
+        }
+        return(f);
     }
 
 </script>
