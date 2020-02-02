@@ -118,6 +118,8 @@ See https://github.com/melahn/helm-inspector for details
         duration = 750,  // controls the speed at which a tree node opens
         detailsHeight = 290,  // controls the height of the details shown in 'inspection node'
         detailsWidth = 400,   // controls the width of the details shown in 'inspection node'
+        detailsTopMargin = 100, // controls the offset of the details shown in 'inspection node'
+        detailsLeftMargin = 28, // controls the offset of the details shown in 'inspection node'
         root, // the root of the tree
         MAXNAMELENGTH = 30, // max name of chart or image to be displayed in details
         treeData // where the data is loaded
@@ -264,8 +266,8 @@ See https://github.com/melahn/helm-inspector for details
                     if (currentMode === mode.INSPECT) {
                         var t = d3.select(this);
                         inspectorNode.style('opacity', 1.0)
-                            .attr('x', d.y0 + 28)
-                            .attr('y', d.x0 - 60);
+                            .attr('x', d.y0 + detailsLeftMargin)
+                            .attr('y', d.x0 - detailsTopMargin);
                         formatDetails(d3.select("#g2"), d)
                     }
                 })
@@ -398,8 +400,8 @@ See https://github.com/melahn/helm-inspector for details
                 // of the node details
                 fo = t.append('foreignObject')
                     .attr("id", "fo")
-                    .attr('x', d.y0 + 30)
-                    .attr('y', d.x0 - 70)
+                    .attr('x', d.y0 + detailsLeftMargin + 2)
+                    .attr('y', d.x0 - (detailsTopMargin + 10))
                     .attr("height", detailsHeight)
                     .attr("width", detailsWidth - 3)
                     // on mouse out move the inspector out of the way and then remove the foreign object itself
