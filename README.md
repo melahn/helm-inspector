@@ -20,12 +20,21 @@ mouse pointer over a node in the tree.
 1. Download the two files 'helm-inspector.html' and 'helm-data.json' to a location served by a web server
 2. Open 'helm-inspector.html' in a browser
 
-You start out in 'navigate mode'.  Clicking on a dark node in the tree expands the node to see the children.
+There two interaction modes
+* *navigate*:  Clicking on an unexpanded tree node expands the node to see the children.
 Clicking on an expanded node collapses the node, hiding the children.
+* *inspect*: Hovering over a node with the mouse shows details of that node.
 
-Pressing the 'i' key puts you in 'inspect' mode.  In this mode, hovering over a node shows details of that node.
+The current mode is always shown in a message near the top of the page. You start out in *navigate* mode.  
 
-Pressing the 'n' key puts you back in 'navigate' mode.
+You can switch the mode using either the mouse or the keyboard, as folllows:
+
+Using the mouse: 
+* Double-clicking will switch to the other mode.
+
+Using the keyboard:
+* Pressing the 'i' key puts you in *inspect* mode.  
+* Pressing the 'n' key puts you back in *navigate* mode.
 
 *Note*: If you don't see the tree view, it is possibly because the file is not
 being served by a web server (D3 fetches the file using http(s)).  You can easily start a local webserver 

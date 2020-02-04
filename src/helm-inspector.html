@@ -97,19 +97,18 @@ See https://github.com/melahn/helm-inspector for details
     var baseChartName;
     var chartCount = 1, imageCount = 0, depthCount = 1, widthCount=1;
 
+    // There are two ways for selecting the mode:
+
+    // Using the keyboard: pressing the 'i' or 'n' key
+    // Using the mouse: double clicking
     d3.select('body')
         .on("keypress", function () {
-            if (d3.event.key === "i") {
-                currentMode = mode.INSPECT;
-                writeInspectMsg();
-
-            } else if (d3.event.key === "n") {
-                currentMode = mode.NAVIGATE;
-                writeNavigateMsg();
-
-            } else {
-                // do nothing
-            }
+            d3.event.key === "i"? currentMode = mode.INSPECT : currentMode = mode.NAVIGATE;
+            writeModeMsg();
+        })
+        .on("dblclick", function () {
+            currentMode === mode.INSPECT ? currentMode = mode.NAVIGATE : currentMode = mode.INSPECT;
+            writeModeMsg();
         });
 
     var i = 0, // used for node id's
@@ -540,29 +539,43 @@ See https://github.com/melahn/helm-inspector for details
     })
 
     /**
+     * Writes the mode message
+     *
+     * @returns {string} currentMode
+     */
+    function writeModeMsg() {
+       currentMode === mode.NAVIGATE? writeNavigateMsg() : writeInspectMsg();
+       return currentMode;
+    }
+
+    /**
      * Writes some information about the Navigation mode
      *
-     * @returns null
+     * @returns {String} mode.NAVIGATE
      */
     function writeNavigateMsg() {
         var s = writeChartInfo();
         s += "<p>Current Mode: <span class=\"selector-bold\">Navigate</span>";
         s += "<p>Click on a node to expand or collapse it.";
-        s += "<br>Press the <span class=\"selector-bold\">'i'</span> key to go into 'Inspect' mode</p></span>";
-        writeHtml("selectorMsg", s)
+        s += "<p>Double-click to switch modes.  Alternatively, ";
+        s += "press the <span class=\"selector-bold\">'i'</span> key to go into 'Inspect' mode</p></span>";
+        writeHtml("selectorMsg", s);
+        return mode.NAVIGATE;
     }
 
     /**
      * Writes some information about the Inspect mode
      *
-     * @returns null
+     * @returns {String} mode.INSPECT
      */
     function writeInspectMsg() {
         var s = writeChartInfo();
         s += "<p>Current Mode: <span class=\"selector-bold\">Inspect</span>";
         s += "<p>Hover over a node to see details about it.";
-        s += "<br>Press the <span class=\"selector-bold\">'n'</span>  key to go into 'Navigate' mode</p></span>";
-        writeHtml("selectorMsg", s)
+        s += "<p>Double-click to switch modes.  Alternatively, ";
+        s += "press the <span class=\"selector-bold\">'n'</span>  key to go into 'Navigate' mode</p></span>";
+        writeHtml("selectorMsg", s);
+        return mode.INSPECT;
     }
 
     /**
