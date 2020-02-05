@@ -3,31 +3,38 @@
 ### Overview
 This project provides an interactive tree view of a Kubernetes Helm chart and its dependencies.
 
-The tree view is loaded from a file containing a JSON representation of the Helm chart,
+The tree view is loaded from a file containing a JSON representation of a Helm chart,
 such as can be generated from
 https://github.com/Alfresco/alfresco-anaxes-chartmap, though any properly formed JSON 
 representation will work. See [JSON Model](#json-model)
 
 The tree view is created using [D3](https://d3js.org/) Version 5.
 
-The user starts out in *navigation* mode in which the user
-can click through the nodes of the tree to see the relationships between a Helm chart and its dependencies
-as well as the Docker images on which a Helm chart depends.  The user can then elect to go into an
-*inspection* mode in which the details of a Helm chart or Docker image can be viewed by hovering the
-mouse pointer over a node in the tree.
-
 ### Usage
-1. Download the two files 'helm-inspector.html' and 'helm-data.json' to a location served by a web server
-2. Open 'helm-inspector.html' in a browser
 
-There two interaction modes
+#### Try it out
+
+[https://melahn.github.io/helm-inspector/src](https://melahn.github.io/helm-inspector/src) 
+
+The helm inspector accepts one optional URL parameter,*chart*, that allows you to specify the name of
+the json file to load with the helm data.  If that parameter is not found it looks for the file *./helm-data.json*.
+For example you can use this url to inspect a
+helm chart called *alfresco-identity-service-2.0.0*.
+
+[https://melahn.github.io/helm-inspector/src?chart=examples/alfresco-identity-service-2.0.0](https://melahn.github.io/helm-inspector/src?chart=examples/alfresco-identity-service-2.0.0)
+
+There are other example json files in the [Examples Folder](./src/examples)
+
+#### A Little Help
+
+There two interaction modes:
 * *navigate*:  Clicking on an unexpanded tree node expands the node to see the children.
 Clicking on an expanded node collapses the node, hiding the children.
 * *inspect*: Hovering over a node with the mouse shows details of that node.
 
 The current mode is always shown in a message near the top of the page. You start out in *navigate* mode.  
 
-You can switch the mode using either the mouse or the keyboard, as folllows:
+You can switch the mode using either the mouse or the keyboard, as follows:
 
 Using the mouse: 
 * Double-clicking will switch to the other mode.
@@ -35,11 +42,6 @@ Using the mouse:
 Using the keyboard:
 * Pressing the 'i' key puts you in *inspect* mode.  
 * Pressing the 'n' key puts you back in *navigate* mode.
-
-*Note*: If you don't see the tree view, it is possibly because the file is not
-being served by a web server (D3 fetches the file using http(s)).  You can easily start a local webserver 
-using, for example, 'python -m SimpleHTTPServer' to serve local files
-and then access the 'helm-inspector.html' from your browser using localhost.
 
 #### Navigate Mode Example
 ![Navigate Mode Example](./resources/navigate-mode-example.png)
@@ -49,11 +51,9 @@ and then access the 'helm-inspector.html' from your browser using localhost.
 *Note*: You can generate different 'helm-data.json' files using https://github.com/Alfresco/alfresco-anaxes-chartmap
 or create one any way you want as long as the file conforms to the [JSON Model](#json-model).
 
-### <a name="json-model"></a>JSON Model
-The file containing the helm data must be in a file named 'helm-data.json' accessible from the html
-page.  
+#### <a name="json-model"></a>JSON Model
 
-The file contains a single JSON object representing the helm tree.  
+The helm data file contains a single JSON object representing the helm tree.  
 
 Each JSON element with properties represents a Helm chart or a Docker images used by a chart.
 
@@ -66,6 +66,19 @@ of 'chart' or 'image', denoting the type of element.
 Each JSON element that represents a chart or an image must have a 'children' property containing 
 an array of the child elements of that chart or image, if any.  If there are no child elements, then
 the array should be empty, but it still must be present.
+
+### Hosting it yourself
+To host helm inspector yourself, just download the two files [index.html](./src/index.html)
+and [helm-data.json](./src/helm-data.json) and serve them in a web server.  
+
+*Note*:  You actually don't even
+need the *helm-data.json* file if you provide your own data files and use the *chart* URL parameter to
+select which one to use.
+
+*Note*: It is necessary to host the files in a web server because D3 fetches the data using http(s).
+You can easily start a local webserver 
+using, for example, 'python -m SimpleHTTPServer' to serve local files
+and then access the 'index.html' file from your browser using localhost.
 
 ### Credits 
 The clickable tree view was inspired by [https://bl.ocks.org/d3noob/1a96af738c89b88723eb63456beb6510](https://bl.ocks.org/d3noob/1a96af738c89b88723eb63456beb6510)
