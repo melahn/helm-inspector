@@ -32,22 +32,13 @@
         "sql",
         "prometheus"
       ],
-      "children": [
-        {
-          "repoHost": "docker.io",
-          "children": [],
-          "name": "bitnami/mariadb",
-          "type": "image",
-          "version": "10.3.21-debian-10-r0"
-        },
-        {
-          "repoHost": "docker.io",
-          "children": [],
-          "name": "bitnami/mariadb",
-          "type": "image",
-          "version": "10.3.21-debian-10-r0"
-        }
-      ],
+      "children": [{
+        "repoHost": "docker.io",
+        "children": [],
+        "name": "bitnami/mariadb",
+        "type": "image",
+        "version": "10.3.21-debian-10-r0"
+      }],
       "name": "mariadb:7.3.6",
       "description": "Fast, reliable, scalable, and easy to use open-source relational database system. MariaDB Server is intended for mission-critical, heavy-load production systems as well as for embedding into mass-deployed software. Highly available MariaDB cluster.",
       "type": "chart",
