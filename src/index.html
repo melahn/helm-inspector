@@ -319,12 +319,6 @@ See https://github.com/melahn/helm-inspector for details
                 })
                 .remove()
 
-            // on exit reduce the opacity of text labels
-            // to avoid the user seeing the text as it is
-            // replaced which would look weird
-            nodeExit.select('text')
-                .style('fill-opacity', 1e-6);
-
             var link = svg.selectAll('path.link')
                 .data(links, function (d) {
                     return d.id;
