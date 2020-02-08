@@ -16,8 +16,6 @@ See https://github.com/melahn/helm-inspector for details
         stroke-width: 3px;
         height: 250px;
         width: 400px;
-        rx: 8;
-        ry: 8;
     }
 
     /* Style for the rectangles */
@@ -27,10 +25,6 @@ See https://github.com/melahn/helm-inspector for details
         stroke-width: 3px;
         height: 80px;
         width: 200px;
-        x: -60;
-        y: -40;
-        rx: 8; /* I like rounded corners */
-        ry: 8; /* I like rounded corners */
     }
 
     /* Style for text using for chart or image titles */
@@ -164,6 +158,8 @@ See https://github.com/melahn/helm-inspector for details
             .attr('id', 'i1')
             .attr('x', -800)
             .attr('y', -800)
+            .attr('rx',8)
+            .attr('ry',8)
             .attr('class', 'inspector')
             .style('opacity', '0');
 
@@ -270,6 +266,10 @@ See https://github.com/melahn/helm-inspector for details
                 // if the user hovers over the rectangle then change the
                 // pointer and surface the inspector view and format the details
                 // if in inspection mode
+                .attr("x", -60)
+                .attr("y", -40)
+                .attr("rx", 8)
+                .attr("ry", 8)
                 .on("mouseover", function (d) {
                     d3.select(this).style("cursor", "pointer");
                     if (currentMode === mode.INSPECT) {
@@ -287,10 +287,8 @@ See https://github.com/melahn/helm-inspector for details
 
             // use the Helm chart name or image name for the node label
             nodeEnter.append('text')
-                .attr("dy", ".35em")
-                .attr("x", function (d) {
-                    return -42
-                })
+                .attr("y", 5)
+                .attr("x", -42)
                 .text(function (d) {
                     return truncateName(d.data.name, MAXNAMELENGTH);
                 });
