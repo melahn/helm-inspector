@@ -29,7 +29,8 @@ There are other example json files in the [Examples Folder](./src/examples)
 
 There two interaction modes:
 * *navigate*:  Clicking on an unexpanded tree node expands the node to see the children.
-Clicking on an expanded node collapses the node, hiding the children.
+Clicking on an expanded node collapses the node, hiding the children.  When a node has 
+child nodes that are not visible, the node is colored darker to indicate that fact.
 * *inspect*: Hovering over a node with the mouse shows details of that node.
 
 The current mode is always shown in a message near the top of the page. You start out in *navigate* mode.  
