@@ -9,10 +9,14 @@ See https://github.com/melahn/helm-inspector for details
 <meta charset="UTF-8">
 <style>
 
+    .svg-background {
+        background-color: #607D8B
+    }
+
     /* Style for the inspector view */
     .inspector {
-        fill: lightgoldenrodyellow;
-        stroke: steelblue;
+        fill: #FFEBEE;
+        stroke: black;
         stroke-width: 3px;
         height: 250px;
         width: 400px;
@@ -20,7 +24,7 @@ See https://github.com/melahn/helm-inspector for details
 
     /* Style for the rectangles */
     .node rect {
-        fill: #fff;
+        fill: #B0BEC5;
         stroke: black;
         stroke-width: 3px;
         height: 80px;
@@ -37,6 +41,11 @@ See https://github.com/melahn/helm-inspector for details
         font: 12px sans-serif;
     }
 
+    /* Style for the separator used in the node details */
+    hr {
+        border-top: 1px solid grey;
+    }
+
     /* Style for the links between nodes */
     .link {
         fill: none;
@@ -48,6 +57,7 @@ See https://github.com/melahn/helm-inspector for details
     .selector {
         font: 18px sans-serif;
     }
+
     /* Style for the selector text */
     .selector-bold {
         font: 18px sans-serif;
@@ -73,6 +83,7 @@ See https://github.com/melahn/helm-inspector for details
 
     // create an svg for the tree to live in
     var svg = d3.select("body").append("svg")
+        .attr("class", "svg-background")
         .attr("width", width + margin.right + margin.left)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -305,9 +316,13 @@ See https://github.com/melahn/helm-inspector for details
             // set the rectangle color to provide an indicator of whether a node
             // has visible children or not so the user knows whether there is more
             // information available by clicking on the node in navigation mode.
-            nodeUpdate.select("rect").style("fill", function (d) {
-                return d._children ? "lightgrey" : "#fff"
-            })
+            nodeUpdate.select("rect")
+                .style("fill", function (d) {
+                    console.log(d.type);
+                    return d._children ? "#B0BEC5" :
+                        (d.data.type == "chart")? "#ECEFF1" : "#FFE0B2";
+                })
+
 
             // remove any nodes that should disappear because of collapsing
             var nodeExit = node.exit().transition()
@@ -404,7 +419,7 @@ See https://github.com/melahn/helm-inspector for details
                     .attr('x', d.y0 + detailsLeftMargin + 2)
                     .attr('y', d.x0 - (detailsTopMargin + 10))
                     .attr("height", detailsHeight)
-                    .attr("width", detailsWidth - 3)
+                    .attr("width", detailsWidth - 4)
                     // on mouse out move the inspector out of the way and then remove the foreign object itself
                     .on("mouseout", function (d) {
                         d3.select("#i1")
