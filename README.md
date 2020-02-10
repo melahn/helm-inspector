@@ -1,5 +1,7 @@
 # helm-inspector
 
+Try it out &#8594; [https://melahn.github.io/helm-inspector/src](https://melahn.github.io/helm-inspector/src) 
+
 ### Overview
 This project provides an interactive tree view of a Kubernetes Helm chart and its dependencies.
 
@@ -12,11 +14,9 @@ The tree view is created using [D3](https://d3js.org/) Version 5.
 
 ### Usage
 
-#### Try it out
+#### Chart Selection
 
-[https://melahn.github.io/helm-inspector/src](https://melahn.github.io/helm-inspector/src) 
-
-The helm inspector accepts one optional URL parameter,*chart*, that allows you to specify the name of
+To select the Helm chart the inspector accepts one optional URL parameter,*chart*, that allows you to specify the name of
 the json file to load with the helm data.  If that parameter is not found it looks for the file *./helm-data.json*.
 For example you can use this url to inspect a
 helm chart called *alfresco-identity-service-2.0.0*.
@@ -25,7 +25,7 @@ helm chart called *alfresco-identity-service-2.0.0*.
 
 There are other example json files in the [Examples Folder](./src/examples)
 
-#### A Little Help
+#### A Little More Help
 
 There two interaction modes:
 * *navigate*:  Clicking on an unexpanded tree node expands the node to see the children.
