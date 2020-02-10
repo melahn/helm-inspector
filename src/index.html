@@ -414,10 +414,13 @@ See https://github.com/melahn/helm-inspector for details
             function formatDetails(t, d) {
                 // create a foreign object so html can be used for text formatting
                 // of the node details
+                var browserAdjust = detectUserAgent() == "safari"? 17:0; // Safari is different in how it handles
+                                                                         // the vertical spacing
+                console.log("browser adjust = " + browserAdjust);
                 fo = t.append('foreignObject')
                     .attr("id", "fo")
                     .attr('x', d.y0 + detailsLeftMargin + 2)
-                    .attr('y', d.x0 - (detailsTopMargin + 10))
+                    .attr('y', d.x0 - (detailsTopMargin + 7 - browserAdjust))
                     .attr("height", detailsHeight)
                     .attr("width", detailsWidth - 4)
                     // on mouse out move the inspector out of the way and then remove the foreign object itself
@@ -655,6 +658,32 @@ See https://github.com/melahn/helm-inspector for details
             }
         }
         return (f);
+    }
+
+    /**
+     * Detects the current browser
+     * Note: Derived from duck type method from https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
+
+     * @returns {string} the browser that was detected
+     */
+    function detectUserAgent() {
+        var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+        var isFirefox = typeof InstallTrigger !== 'undefined';
+        var isSafari = /constructor/i.test(window.HTMLElement) || (function (p) {
+            return p.toString() === "[object SafariRemoteNotification]";
+        })(!window['safari'] || (typeof safari !== 'undefined' && safari.pushNotification));
+        var isIE = /*@cc_on!@*/false || !!document.documentMode;
+        var isEdge = !isIE && !!window.StyleMedia;
+        var isChrome = !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+        var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
+        var isBlink = (isChrome || isOpera) && !!window.CSS;
+        return (isOpera) ? "opera" :
+            (isFirefox) ? "firefox" :
+                (isSafari) ? "safari" :
+                    (isIE) ? "ie" :
+                        (isEdge || isEdgeChromium) ? "edge" :
+                            (isChrome) ? "chrome" :
+                                (isBlink) ? "blink" : "unknown";
     }
 
 </script>
