@@ -27,7 +27,7 @@ There are other example json files in the [Examples Folder](./src/examples)
 
 #### A Little More Help
 
-There two interaction modes:
+There are two interaction modes:
 * *navigate*:  Clicking on an unexpanded tree node expands the node to see the children.
 Clicking on an expanded node collapses the node, hiding the children.  When a node has 
 child nodes that are not visible, the node is colored darker to indicate that fact.
@@ -80,6 +80,30 @@ select which one to use.
 You can easily start a local webserver 
 using, for example, 'python -m SimpleHTTPServer' to serve local files
 and then access the 'index.html' file from your browser using localhost.
+
+### Tested Browsers and Devices
+I have tested using the following devices and browsers:
+
+| Device  | Browser |
+| ------------- | ------------- |
+| Mac  | Chrome  |
+| Mac  | Firefox  |
+| Mac  | Safari  |
+| Mac  | Opera  |
+| Mac  | Blink  |
+| Mac  | Edge (beta)  |
+| iPad  | Chrome  |
+| iPad  | Firefox  |
+| iPad  | Safari  |
+| iPad  | Opera  |
+| iPad  | DuckDuckGo  |
+| iPhone  | Chrome  |
+| iPhone  | Safari  |
+
+Feedback anyone can provide on other devices and browsers would be most appreciated!
+
+### Issues
+If you find any issues please open an [issue](https://github.com/melahn/helm-inspector/issues).
 
 ### Credits 
 The clickable tree view was inspired by [https://bl.ocks.org/d3noob/1a96af738c89b88723eb63456beb6510](https://bl.ocks.org/d3noob/1a96af738c89b88723eb63456beb6510)
