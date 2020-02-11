@@ -414,8 +414,8 @@ See https://github.com/melahn/helm-inspector for details
             function formatDetails(t, d) {
                 // create a foreign object so html can be used for text formatting
                 // of the node details
-                var browserAdjust = detectUserAgent() == "safari"? 17:0; // Safari is different in how it handles
-                                                                         // the vertical spacing
+                var browserAdjust = (detectUserAgent() === "safari" || isTouch())? 17:0; // adjust for diffs in vertical
+                                                                                         // spacing
                 console.log("browser adjust = " + browserAdjust);
                 fo = t.append('foreignObject')
                     .attr("id", "fo")
@@ -663,7 +663,7 @@ See https://github.com/melahn/helm-inspector for details
     /**
      * Detects the current browser
      * Note: Derived from duck type method from https://stackoverflow.com/questions/9847580/how-to-detect-safari-chrome-ie-firefox-and-opera-browser
-
+     *
      * @returns {string} the browser that was detected
      */
     function detectUserAgent() {
@@ -684,6 +684,14 @@ See https://github.com/melahn/helm-inspector for details
                         (isEdge || isEdgeChromium) ? "edge" :
                             (isChrome) ? "chrome" :
                                 (isBlink) ? "blink" : "unknown";
+    }
+    /**
+     * Detects whether the device is touch aware (usually mobile)
+     *
+     * @returns {boolean} true if the device is touch aware, false otherwise
+     */
+    function isTouch() {
+        return navigator.maxTouchPoints > 1;
     }
 
 </script>
