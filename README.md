@@ -102,8 +102,11 @@ I have tested using the following devices and browsers:
 
 Feedback anyone can provide on other devices and browsers would be most appreciated!
 
+**Note**: According to [MSDN](https://docs.microsoft.com/en-us/openspecs/ie_standards/ms-svg/56e6e04c-7c8c-44dd-8100-bd745ee42034), Internet
+Explorer does not support use of "foreignObject" so it is not likely that helm-inspector will work with it.
+
 ### Issues
-If you find any issues please open an [issue](https://github.com/melahn/helm-inspector/issues).
+If you find any problems please open an [issue](https://github.com/melahn/helm-inspector/issues).
 
 ### Credits 
 The clickable tree view was inspired by [https://bl.ocks.org/d3noob/1a96af738c89b88723eb63456beb6510](https://bl.ocks.org/d3noob/1a96af738c89b88723eb63456beb6510)
