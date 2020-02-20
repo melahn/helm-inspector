@@ -100,7 +100,7 @@ I have tested using the following devices and browsers:
 | iPhone  | Chrome  |
 | iPhone  | Safari  |
 
-Feedback anyone can provide on other devices and browsers would be most appreciated!
+Feedback that anyone can provide on other devices and browsers would be most appreciated!
 
 **Note**: According to [MSDN](https://docs.microsoft.com/en-us/openspecs/ie_standards/ms-svg/56e6e04c-7c8c-44dd-8100-bd745ee42034), Internet
 Explorer does not support use of "foreignObject" so it is not likely that helm-inspector will work with it.
