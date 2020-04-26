@@ -25,12 +25,12 @@ chart called *alfresco-content-services-2.1.3*.
 
 **Using a url:** 
 
-<div style="display: inline">https://melahn.github.io/helm-inspector/src?chart=https://melahn.github.io/helm-inspector/src/examples/alfresco-content-services-2.1.3</div>
+<div style="display: inline">https://melahn.github.io/helm-inspector/src?chart=https://melahn.github.io/helm-inspector/src/examples/alfresco-content-services-3.0.6</div>
 <p></p>
 
 **Using a file local to the html page:**
 
-<div style="display: inline">https://melahn.github.io/helm-inspector/src?chart=examples/alfresco-content-services-2.1.3</div>
+<div style="display: inline">https://melahn.github.io/helm-inspector/src?chart=examples/alfresco-content-services-3.0.6</div>
 <p></p>
 
 There are other example json files in the [Examples Folder](./src/examples).
