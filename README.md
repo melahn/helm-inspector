@@ -1,4 +1,6 @@
 # helm-inspector
+![version](https://img.shields.io/badge/version-1.0.0-green)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Try it out &#8594; [https://melahn.github.io/helm-inspector/src](https://melahn.github.io/helm-inspector/src) 
 

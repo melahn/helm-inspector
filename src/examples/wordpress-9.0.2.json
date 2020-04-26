@@ -1,8 +1,4 @@
 {
-  "maintainers": [{
-    "name": "Bitnami",
-    "email": "containers@bitnami.com"
-  }],
   "keywords": [
     "wordpress",
     "cms",
@@ -18,7 +14,7 @@
       "children": [],
       "name": "bitnami/wordpress",
       "type": "image",
-      "version": "5.3.2-debian-10-r0"
+      "version": "5.3.2-debian-10-r32"
     },
     {
       "maintainers": [{
@@ -37,18 +33,18 @@
         "children": [],
         "name": "bitnami/mariadb",
         "type": "image",
-        "version": "10.3.21-debian-10-r0"
+        "version": "10.3.22-debian-10-r27"
       }],
-      "name": "mariadb:7.3.6",
+      "name": "mariadb:7.3.12",
       "description": "Fast, reliable, scalable, and easy to use open-source relational database system. MariaDB Server is intended for mission-critical, heavy-load production systems as well as for embedding into mass-deployed software. Highly available MariaDB cluster.",
       "type": "chart",
       "shortName": "mariadb",
-      "version": "7.3.6"
+      "version": "7.3.12"
     }
   ],
-  "name": "wordpress:8.1.2",
-  "description": "Web publishing platform for building blogs and websites.",
+  "name": "wordpress:9.0.2",
+  "description": "DEPRECATED Web publishing platform for building blogs and websites.",
   "type": "chart",
   "shortName": "wordpress",
-  "version": "8.1.2"
+  "version": "9.0.2"
 }
