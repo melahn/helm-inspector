@@ -9,7 +9,7 @@ This project provides an interactive tree view of a Kubernetes Helm chart and it
 
 The tree view is loaded from a file containing a JSON representation of a Helm chart,
 such as can be generated from
-https://github.com/Alfresco/alfresco-anaxes-chartmap, though any properly formed JSON 
+https://github.com/melahn/helm-chartmap, though any properly formed JSON 
 representation will work. See [JSON Model](#json-model)
 
 The tree view is created using [D3](https://d3js.org/) Version 5.
